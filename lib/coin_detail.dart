@@ -45,7 +45,7 @@ class _CoinDetailState extends State<CoinDetail> {
     futureCoinMarketChart = fetchCoinDetailFuture('1');
     futureCoinDetail = fetchCoinDetailDBFuture(widget.coinModel.id);
     instantiateCurrentPrice();
-    updateCurrentPrice();
+    // updateCurrentPrice();
   }
 
   @override
@@ -400,12 +400,12 @@ class _CoinDetailState extends State<CoinDetail> {
     return result;
   }
 
-  Future<void> updateCurrentPrice() async {
-    Timer.periodic(const Duration(seconds: 45), (timer) async {
-      currentPrice = coinMarketChartModel.getCurrentPrice(widget.coinModel.id);
-      streamController.add(await currentPrice);
-    });
-  }
+  // Future<void> updateCurrentPrice() async {
+  //   Timer.periodic(const Duration(seconds: 45), (timer) async {
+  //     currentPrice = coinMarketChartModel.getCurrentPrice(widget.coinModel.id);
+  //     streamController.add(await currentPrice);
+  //   });
+  // }
 
   Future<void> instantiateCurrentPrice() async {
     currentPrice = coinMarketChartModel.getCurrentPrice(widget.coinModel.id);
