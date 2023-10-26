@@ -18,7 +18,7 @@ class _GraphTestState extends State<GraphTest> {
   };
   @override
   Widget build(BuildContext context) {
-    final _size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Graph Example'),
@@ -40,7 +40,7 @@ class _GraphTestState extends State<GraphTest> {
                   }),
             ),
             SizedBox(
-              height: _size.height / 3,
+              height: size.height / 3,
               child: LineChart(
                 LineChartData(
                   gridData: const FlGridData(show: false),

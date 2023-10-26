@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:stock/api_json.dart';
 import 'package:stock/detail.dart';
+import 'package:stock/profile.dart';
 import 'package:stock/stock_database.dart';
 import 'package:stock/stocks.dart';
 import 'package:waiting_animation/triangle.dart';
@@ -55,7 +56,7 @@ class _HomeViewState extends State<HomeView> {
                     Expanded(child: listOfStocks())
                   ])),
               const Center(child: CoinsView()),
-              const Center(child: Text('Profile')),
+              Center(child: Profile()),
             ],
           ),
           bottomNavigationBar: TabBar(
@@ -90,9 +91,9 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Widget elevatedButttons() {
-    final _size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
     return SizedBox(
-        width: _size.width / 2,
+        width: size.width / 2,
         height: 20,
         child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
           ElevatedButton(
@@ -135,7 +136,7 @@ class _HomeViewState extends State<HomeView> {
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Text('No data in the database');
+          return const Text('No data in the database');
         } else {
           print(snapshot.data!.length);
           snapshot.data!.sort((a, b) => b.o.compareTo(a.o));
@@ -153,7 +154,7 @@ class _HomeViewState extends State<HomeView> {
                     trailing: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Container(
+                        SizedBox(
                             width: 100,
                             child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -166,7 +167,7 @@ class _HomeViewState extends State<HomeView> {
                                   const SizedBox(width: 4),
                                   Text('${item.h}'),
                                 ])),
-                        Container(
+                        SizedBox(
                           width: 100,
                           child: Row(
                             //mainAxisAlignment: MainAxisAlignment.center,

@@ -3,7 +3,6 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter/widgets.dart';
 import 'package:stock/api_json.dart';
-import 'package:stock/stocks.dart';
 
 class StockDatabase {
   late Database db;

@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +44,6 @@ class _CoinDetailState extends State<CoinDetail> {
     futureCoinMarketChart = fetchCoinDetailFuture('1');
     futureCoinDetail = fetchCoinDetailDBFuture(widget.coinModel.id);
     instantiateCurrentPrice();
-    // updateCurrentPrice();
   }
 
   @override
@@ -119,29 +117,29 @@ class _CoinDetailState extends State<CoinDetail> {
               } else {
                 print('item length: ${snapshot.data!.prices.length}');
                 List<dynamic>? prices = snapshot.data!.prices.reversed.toList();
-                double? _minX = prices
+                double? minX = prices
                     .map((item) => item[0].toDouble())
                     .reduce((min, value) => min < value ? min : value);
-                double? _maxX = prices
+                double? maxX = prices
                     .map((item) => item[0].toDouble())
                     .reduce((max, value) => max > value ? max : value);
-                double? _minY = prices
+                double? minY = prices
                     .map((item) => item[1])
                     .reduce((min, value) => min < value ? min : value);
-                double? _maxY = prices
+                double? maxY = prices
                     .map((item) => item[1])
                     .reduce((max, value) => max > value ? max : value);
                 return Stack(children: [
-                  lineChart(prices, _minX, _maxX, _minY, _maxY),
-                  lineChartY(_minX, _maxX, _minY, _maxY)
+                  lineChart(prices, minX, maxX, minY, maxY),
+                  lineChartY(minX, maxX, minY, maxY)
                 ]);
               }
             }));
   }
 
-  Widget lineChart(List<dynamic?> prices, double? _minX, double? _maxX,
-      double? _minY, double? _maxY) {
-    List<FlSpot> _spots = prices
+  Widget lineChart(List<dynamic> prices, double? minX, double? maxX,
+      double? minY, double? maxY) {
+    List<FlSpot> spots = prices
         .asMap()
         .entries
         .where((entry) => entry.value[1] != null)
@@ -160,13 +158,13 @@ class _CoinDetailState extends State<CoinDetail> {
             width: 1,
           ),
         ),
-        minX: _minX?.toDouble(),
-        maxX: _maxX?.toDouble(),
-        minY: _minY,
-        maxY: _maxY,
+        minX: minX?.toDouble(),
+        maxX: maxX?.toDouble(),
+        minY: minY,
+        maxY: maxY,
         lineBarsData: [
           LineChartBarData(
-            spots: _spots,
+            spots: spots,
             isCurved: false,
             color: Colors.blue,
             dotData: const FlDotData(show: false),
@@ -180,23 +178,22 @@ class _CoinDetailState extends State<CoinDetail> {
     );
   }
 
-  Widget lineChartY(
-      double? _minX, double? _maxX, double? _minY, double? _maxY) {
+  Widget lineChartY(double? minX, double? maxX, double? minY, double? maxY) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          '${_maxY?.toStringAsFixed(2)}',
+          '${maxY?.toStringAsFixed(2)}',
           style: TextStyle(color: Colors.grey.withOpacity(0.5)),
         ),
         const Spacer(),
         Text(
-          (_minY! + (_maxY! - _minY) / 2).toStringAsFixed(2),
+          (minY! + (maxY! - minY) / 2).toStringAsFixed(2),
           style: TextStyle(color: Colors.grey.withOpacity(0.5)),
         ),
         const Spacer(),
         Text(
-          _minY.toStringAsFixed(2),
+          minY.toStringAsFixed(2),
           style: TextStyle(color: Colors.grey.withOpacity(0.5)),
         ),
       ],
@@ -260,7 +257,7 @@ class _CoinDetailState extends State<CoinDetail> {
                         }
                       },
                     )),
-                Container(
+                SizedBox(
                     height: MediaQuery.of(context).size.height / 3,
                     child: SingleChildScrollView(
                         child: Text(editedText(data['description']))))
@@ -287,15 +284,20 @@ class _CoinDetailState extends State<CoinDetail> {
             final pri = snapshot.data! ?? 1.0;
             return ElevatedButton(
                 onPressed: () async {
-                  UserData userData = UserData(widget.coinModel.id, 1, pri,
-                      DateTime.now().millisecondsSinceEpoch);
-                  await userDataDB.insertUserDataDb(userData.toMap());
+                  UserData userData = UserData(
+                      widget.coinModel.id,
+                      1,
+                      [
+                        [DateTime.now().millisecondsSinceEpoch, coin]
+                      ],
+                      coin / pri);
+                  await userDataDB.insertUserDataDb(userData);
                 },
                 style: const ButtonStyle(
                     backgroundColor: MaterialStatePropertyAll(Colors.green)),
                 child: Text(
-                    'Buy ${coin / pri} ${widget.coinModel.name} at \$${pri}'));
-          } else if (snapshot.connectionState == ConnectionState.waiting) {
+                    'Buy ${coin / pri} ${widget.coinModel.name} at \$$pri'));
+          } else {
             return Container(
               width: 100,
               height: 20,
@@ -305,13 +307,6 @@ class _CoinDetailState extends State<CoinDetail> {
               child: const SizedBox(
                   width: 30, height: 10, child: ThreeDotWaiting()),
             );
-          } else {
-            return ElevatedButton(
-                onPressed: () {},
-                style: const ButtonStyle(
-                    backgroundColor: MaterialStatePropertyAll(Colors.green)),
-                child: Text(
-                    'Buy ${coin / widget.coinModel.currentPrice} ${widget.coinModel.name}'));
           }
         },
       ),
@@ -325,10 +320,8 @@ class _CoinDetailState extends State<CoinDetail> {
       keyboardType: TextInputType.number,
       decoration: const InputDecoration(hintText: '0'),
       onChanged: (text) {
-        if (double.parse(text) != null) {
-          setState(() {
-            coin = double.parse(text);
-          });
+        if (RegExp(r'^[0-9.]+$').hasMatch(text) && text[0] != '0') {
+          setState(() => coin = double.parse(text));
         }
       },
     );
@@ -399,13 +392,6 @@ class _CoinDetailState extends State<CoinDetail> {
     });
     return result;
   }
-
-  // Future<void> updateCurrentPrice() async {
-  //   Timer.periodic(const Duration(seconds: 45), (timer) async {
-  //     currentPrice = coinMarketChartModel.getCurrentPrice(widget.coinModel.id);
-  //     streamController.add(await currentPrice);
-  //   });
-  // }
 
   Future<void> instantiateCurrentPrice() async {
     currentPrice = coinMarketChartModel.getCurrentPrice(widget.coinModel.id);

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stock/coin_detail.dart';
 import 'package:stock/database.dart';
-import 'test.dart';
 
 import 'api_json.dart';
 import 'coins.dart';
@@ -25,10 +24,10 @@ class _CoinsViewState extends State<CoinsView> {
 
   @override
   Widget build(BuildContext context) {
-    final Size _size = MediaQuery.of(context).size;
+    final Size size = MediaQuery.of(context).size;
     return Column(children: [
       SizedBox(
-          width: _size.width / 3,
+          width: size.width / 3,
           height: 20,
           child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
             ElevatedButton(
@@ -51,7 +50,7 @@ class _CoinsViewState extends State<CoinsView> {
                   final List<CoinModel> temp = await tempCoin;
                   ManageCoinDB.insertCoins(temp);
                 },
-                child: Text('R'))
+                child: const Text('R'))
           ])),
       Expanded(child: futureBuilder()),
     ]);
