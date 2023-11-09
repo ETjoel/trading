@@ -3,11 +3,10 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stock/api_json.dart';
-import 'package:stock/database.dart';
+import 'package:stock/data_base.dart';
 import 'package:stock/three_dot_waiting.dart';
 import 'package:stock/user_data.dart';
-import 'coinDetailModel.dart';
-//import 'package:waiting_animation/three_dot_waiting.dart';
+import 'coin_detail_model.dart';
 
 class CoinDetail extends StatefulWidget {
   final CoinModel coinModel;
@@ -56,20 +55,13 @@ class _CoinDetailState extends State<CoinDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.coinModel.name),
-          // automaticallyImplyLeading: false,
-          // actions: [
-          //   IconButton(
-          //       onPressed: () {
-          //         Navigator.of(context).pop();
-          //         dispose();
-          //       },
-          //       icon: const Icon(Icons.arrow_back)),
-          //   const Spacer()
-          // ],
+          title: const Text(''),
+          iconTheme: IconThemeData(color: Colors.grey.shade700, size: 20),
+          backgroundColor: Colors.white,
+          elevation: 0,
         ),
         body: Padding(
-          padding: const EdgeInsets.all(5),
+          padding: const EdgeInsets.only(left: 10, right: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -87,13 +79,15 @@ class _CoinDetailState extends State<CoinDetail> {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: CupertinoSegmentedControl<String>(
+          selectedColor: Colors.blue,
+          borderColor: Colors.blue,
           children: segmentedItems,
           groupValue: selectedSegment,
           onValueChanged: (String newValue) {
             setState(() {
               selectedSegment = newValue;
               if (selectedSegment != null) {
-                // _setState(selectedSegment!);
+                _setState(selectedSegment!);
               }
             });
           }),
@@ -109,13 +103,12 @@ class _CoinDetailState extends State<CoinDetail> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const SizedBox(
-                    width: 50, height: 50, child: CircularProgressIndicator());
+                    width: 50, height: 50, child: ThreeDotWaiting());
               } else if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
               } else if (!snapshot.hasData || snapshot.data!.prices.isEmpty) {
                 return const Text('No data in the Database');
               } else {
-                print('item length: ${snapshot.data!.prices.length}');
                 List<dynamic>? prices = snapshot.data!.prices.reversed.toList();
                 double? minX = prices
                     .map((item) => item[0].toDouble())
@@ -154,7 +147,7 @@ class _CoinDetailState extends State<CoinDetail> {
         borderData: FlBorderData(
           show: false,
           border: Border.all(
-            color: const Color(0xff37434d),
+            color: Colors.blue.shade700,
             width: 1,
           ),
         ),
@@ -166,11 +159,11 @@ class _CoinDetailState extends State<CoinDetail> {
           LineChartBarData(
             spots: spots,
             isCurved: false,
-            color: Colors.blue,
+            color: Colors.blue.shade400,
             dotData: const FlDotData(show: false),
             belowBarData: BarAreaData(
               show: true,
-              color: Colors.blue.withOpacity(0.1),
+              color: Colors.blue.shade400.withOpacity(0.1),
             ),
           ),
         ],
@@ -184,17 +177,17 @@ class _CoinDetailState extends State<CoinDetail> {
       children: [
         Text(
           '${maxY?.toStringAsFixed(2)}',
-          style: TextStyle(color: Colors.grey.withOpacity(0.5)),
+          style: TextStyle(color: Colors.blue.withOpacity(0.5)),
         ),
         const Spacer(),
         Text(
           (minY! + (maxY! - minY) / 2).toStringAsFixed(2),
-          style: TextStyle(color: Colors.grey.withOpacity(0.5)),
+          style: TextStyle(color: Colors.blue.withOpacity(0.5)),
         ),
         const Spacer(),
         Text(
           minY.toStringAsFixed(2),
-          style: TextStyle(color: Colors.grey.withOpacity(0.5)),
+          style: TextStyle(color: Colors.blue.withOpacity(0.5)),
         ),
       ],
     );
@@ -203,7 +196,7 @@ class _CoinDetailState extends State<CoinDetail> {
   LineTouchData graphTouchData() {
     return LineTouchData(
         touchTooltipData: LineTouchTooltipData(
-            tooltipBgColor: Colors.blue,
+            tooltipBgColor: Colors.grey.shade400,
             getTooltipItems: (List<LineBarSpot> touchedSpot) {
               return touchedSpot.map((LineBarSpot spot) {
                 final yValue = spot.y.toStringAsFixed(2);
@@ -246,7 +239,7 @@ class _CoinDetailState extends State<CoinDetail> {
                       stream: streamController.stream,
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          return Text('${snapshot.data!}');
+                          return Text('\$${snapshot.data!}');
                         } else if (snapshot.connectionState ==
                             ConnectionState.waiting) {
                           return const SizedBox(
@@ -274,14 +267,14 @@ class _CoinDetailState extends State<CoinDetail> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Text('\$'),
-          SizedBox(height: 50, width: 50, child: coinPriceTextField())
+          SizedBox(height: 30, width: 120, child: coinPriceTextField())
         ],
       ),
       StreamBuilder(
         stream: streamController.stream,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            final pri = snapshot.data! ?? 1.0;
+            final pri = snapshot.data!;
             return ElevatedButton(
                 onPressed: () async {
                   UserData userData = UserData(
@@ -298,15 +291,8 @@ class _CoinDetailState extends State<CoinDetail> {
                 child: Text(
                     'Buy ${coin / pri} ${widget.coinModel.name} at \$$pri'));
           } else {
-            return Container(
-              width: 100,
-              height: 20,
-              decoration: const BoxDecoration(
-                color: Colors.green,
-              ),
-              child: const SizedBox(
-                  width: 30, height: 10, child: ThreeDotWaiting()),
-            );
+            return const SizedBox(
+                width: 100, height: 20, child: ThreeDotWaiting());
           }
         },
       ),
@@ -318,10 +304,18 @@ class _CoinDetailState extends State<CoinDetail> {
       controller: _constroller,
       autocorrect: false,
       keyboardType: TextInputType.number,
-      decoration: const InputDecoration(hintText: '0'),
+      decoration: InputDecoration(
+        hintText: '0',
+        filled: false,
+        fillColor: Colors.grey.shade200,
+        labelStyle: const TextStyle(fontSize: 12),
+        focusColor: Colors.grey.shade200,
+      ),
       onChanged: (text) {
         if (RegExp(r'^[0-9.]+$').hasMatch(text) && text[0] != '0') {
-          setState(() => coin = double.parse(text));
+          setState(() {
+            coin = double.parse(text);
+          });
         }
       },
     );
@@ -332,27 +326,21 @@ class _CoinDetailState extends State<CoinDetail> {
     switch (selectedValue) {
       case '1D':
         days = '1';
-        print(days);
         break;
       case '5D':
         days = '5';
-        print(days);
         break;
       case '1M':
         days = '30';
-        print(days);
         break;
       case '6M':
         days = '180';
-        print(days);
         break;
       case '1Yr':
         days = '365';
-        print(days);
         break;
       case 'since':
         days = 'max';
-        print(days);
         break;
     }
     futureCoinMarketChart = fetchCoinDetailFuture(days);

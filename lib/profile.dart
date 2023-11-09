@@ -2,22 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:stock/three_dot_waiting.dart';
 import 'package:stock/user_data.dart';
 
-class Profile extends StatelessWidget {
-  Profile({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return ProfileView();
-  }
-}
-
 class ProfileView extends StatefulWidget {
+  const ProfileView({Key? key}) : super(key: key);
+
   @override
-  _ProfileViewState createState() => _ProfileViewState();
+  State<ProfileView> createState() => _ProfileViewState();
 }
 
 class _ProfileViewState extends State<ProfileView> {
   late Future<List<UserData>> userData;
   UserDataDB userDataDB = UserDataDB();
+
   @override
   void initState() {
     super.initState();
@@ -26,7 +21,11 @@ class _ProfileViewState extends State<ProfileView> {
 
   @override
   Widget build(BuildContext context) {
-    return futureBuilder();
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('Profile'),
+        ),
+        body: Center(child: futureBuilder()));
   }
 
   Widget futureBuilder() {
@@ -58,14 +57,13 @@ class _ProfileViewState extends State<ProfileView> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text('Coins'),
+              const Text('Coins'),
               Expanded(child: coinFutureBuilder(coins)),
-              Text(stocks.length > 0 ? 'Stocks' : ''),
+              Text(stocks.isNotEmpty ? 'Stocks' : ''),
               Expanded(child: stockFutureBuilder(stocks))
             ],
           );
         }
-        ;
       },
     );
   }
@@ -80,8 +78,8 @@ class _ProfileViewState extends State<ProfileView> {
           background: Container(
             color: Colors.red,
             alignment: Alignment.centerRight,
-            padding: EdgeInsets.symmetric(horizontal: 20.0),
-            child: Icon(Icons.delete, color: Colors.white),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: const Icon(Icons.delete, color: Colors.white),
           ),
           onDismissed: (direction) {
             setState(() {
@@ -108,8 +106,8 @@ class _ProfileViewState extends State<ProfileView> {
           background: Container(
             color: Colors.red,
             alignment: Alignment.centerRight,
-            padding: EdgeInsets.symmetric(horizontal: 20.0),
-            child: Icon(Icons.delete, color: Colors.white),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: const Icon(Icons.delete, color: Colors.white),
           ),
           onDismissed: (direction) {
             setState(() {

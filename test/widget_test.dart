@@ -28,7 +28,7 @@
 //     expect(find.text('1'), findsOneWidget);
 //   });
 // }
-import 'package:stock/coinDetailModel.dart';
+// import 'package:stock/coinDetailModel.dart';
 
 void main() async {
   // DateTime temp = DateTime.now();
@@ -58,7 +58,5 @@ void main() async {
   // CoinMarketChartModel chartModel = CoinMarketChartModel();
   // CoinMarketChart chart = await chartModel.fetchCoinMarketChart('1392577232', '1422577232');
   // print(chart.prices[0]);
-  print(DateTime.fromMillisecondsSinceEpoch(1695772800000));
-
-
+  // print(DateTime.fromMillisecondsSinceEpoch(1695772800000));
 }

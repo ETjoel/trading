@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-
-import 'home.dart';
+import 'package:provider/provider.dart';
+import 'home_view.dart';
 
 void main() {
-  runApp(const MaterialApp(
-    home: Home()
-  ));
+  runApp(ChangeNotifierProvider(
+      create: (context) => AppData(),
+      child: const MaterialApp(home: HomeView())));
 }

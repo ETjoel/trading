@@ -42,14 +42,14 @@ class UserDataDB {
   // }
   Future<void> initializeDB() async {
     final databasePath = await getDatabasesPath();
-    const databaseName = 'user_data';
+    // const databaseName = 'user_data';
     db = await openDatabase(join(databasePath, dbName), version: 1,
         onCreate: (db, version) async {
       await db.execute('''
         CREATE TABLE user_data (id TEXT PRIMARY KEY, isCoin INTEGER, history TEXT, investment REAL)
         ''');
     });
-    print('user_data db initialized');
+    // print('user_data db initialized');
   }
 
   Future<void> insertUserDataDb(UserData userMap) async {
@@ -76,8 +76,8 @@ class UserDataDB {
     await initializeDB();
     tableExist();
     final result = await db.query('user_data');
-    if (result.length > 0) {
-      print(result);
+    if (result.isNotEmpty) {
+      // print(result);
       return List.generate(
           result.length, (index) => UserData.fromMap(result[index]));
     } else {
@@ -89,11 +89,11 @@ class UserDataDB {
     final table = await db.rawQuery(
         "SELECT name FROM sqlite_master WHERE type='table' AND name='user_data'");
     if (table.isEmpty) {
-      print('table does not exist');
+      // print('table does not exist');
       await db.execute(
           '''CREATE TABLE user_data (id TEXT PRIMARY KEY, isCoin INTEGER, history TEXT, investment REAL)''');
     } else {
-      print('table exist');
+      // print('table exist');
     }
   }
 }

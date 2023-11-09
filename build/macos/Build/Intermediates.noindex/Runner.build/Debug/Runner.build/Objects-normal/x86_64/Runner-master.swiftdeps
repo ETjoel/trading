@@ -1,0 +1,8 @@
+version: "Apple Swift version 5.6.1 (swiftlang-5.6.0.323.66 clang-1316.0.20.12)"
+options: "3beccf40bc91ed8a28c1bed30bf0158750f450f783a70764f4ec7f4030216a04"
+build_start_time: [1699335959, 833673000]
+build_end_time: [1699335961, 85793018]
+inputs:
+  "/Users/joel/Documents/flutter_dev/trading/macos/Flutter/GeneratedPluginRegistrant.swift": [1699335941, 73804378]
+  "/Users/joel/Documents/flutter_dev/trading/macos/Runner/AppDelegate.swift": [1686756980, 0]
+  "/Users/joel/Documents/flutter_dev/trading/macos/Runner/MainFlutterWindow.swift": [1686756980, 0]

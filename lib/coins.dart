@@ -16,7 +16,7 @@ class Coins {
             jsonList.map((json) => CoinModel.fromJson(json)).toList();
         return responseData;
       } else {
-        print('failed from getCoins: statusCode: ${response.statusCode}');
+        // print('failed from getCoins: statusCode: ${response.statusCode}');
         throw Exception('fetal error in getCoins');
       }
     } catch (exception) {

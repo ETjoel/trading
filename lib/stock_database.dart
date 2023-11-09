@@ -8,63 +8,101 @@ class StockDatabase {
   late Database db;
   final stockTable = 'stock_model';
 
-  StockDatabase()  {
+  StockDatabase() {
     WidgetsFlutterBinding.ensureInitialized();
   }
 
   Future<void> initializeDb() async {
     final databasePath = await getDatabasesPath();
     const databaseName = 'stocks';
-    print('db is about to be opened');
-    db = await openDatabase(
-      join(databasePath, databaseName),
-      version: 1,
-      onCreate: (db, version) async {
-        print('creating table');
-        await db.execute('''
+    // print('db is about to be opened');
+    db = await openDatabase(join(databasePath, databaseName), version: 1,
+        onCreate: (db, version) async {
+      // print('creating table');
+      await db.execute('''
           CREATE TABLE $stockTable (ticker TEXT PRIMARY KEY,c REAL,h REAL,l REAL,n REAL,o REAL,t REAL,v REAL,vw REAL);
-          ''' );
-        await db.execute('''
+          ''');
+      await db.execute('''
           CREATE TABLE stock_detail (Symbol TEXT PRIMARY KEY, AssetType TEXT, Name TEXT, Description TEXT, Country TEXT, Sector TEXT, Industry TEXT, Address TEXT, Exchange TEXT, Currency TEXT);
-          ''' );
-      }
-    );
+          ''');
+    });
   }
 
   Future<void> insertStock(List<GroupedDaily2> stocks) async {
-    await db.delete(stockTable);
+    // await db.delete(stockTable);
     for (final stock in stocks) {
-      await db.insert(
-          stockTable,
-          stock.toJson(),
-          conflictAlgorithm: ConflictAlgorithm.replace
-      );
+      await db.insert(stockTable, stock.toJson(),
+          conflictAlgorithm: ConflictAlgorithm.replace);
     }
   }
+
   Future<void> insertStockDetail(StockDetail stockDetail) async {
-    final tables = await db.query('sqlite_master', where: 'name = ?', whereArgs: ['stock_detail']);
+    final tables = await db
+        .query('sqlite_master', where: 'name = ?', whereArgs: ['stock_detail']);
     if (tables.isEmpty) {
       await db.execute('''
           CREATE TABLE stock_detail (Symbol TEXT PRIMARY KEY, AssetType TEXT, Name TEXT, Description TEXT, Country TEXT, Sector TEXT, Industry TEXT, Address TEXT, Exchange TEXT, Currency TEXT);
-          ''' );
+          ''');
     }
     await db.insert('stock_detail', stockDetail.toMap(stockDetail));
   }
+
   Future<List<GroupedDaily2>> fetchStocks() async {
     List<Map<String, dynamic>> queries = await db.query(stockTable);
     return List.generate(queries.length, (index) {
       return GroupedDaily2.fromMap(queries[index]);
-    }
-    );
+    });
   }
+
+  Future<List<GroupedDaily2>> fetchFavoriteStocks(List<String> ids) async {
+    String placeholders = List.filled(ids.length, '?').join(',');
+    String whereStmnt = 'ticker IN ($placeholders)';
+    List<Map<String, dynamic>> queries =
+        await db.query(stockTable, where: whereStmnt, whereArgs: ids);
+    if (queries.isNotEmpty) {
+      return List.generate(queries.length, (index) {
+        return GroupedDaily2.fromMap(queries[index]);
+      });
+    } else {
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchFavoriteStocksMap(
+      List<String> ids) async {
+    if (ids.isEmpty) {
+      return [];
+    }
+
+    final placeholders = List.filled(ids.length, '?').join(', ');
+    final whereStmnt = 'Symbol IN ($placeholders)';
+
+    //   final query = '''
+    //   SELECT d.Symbol, d.AssetType, d.Name, d.Country, m.h, m.l
+    //   FROM stock_detail AS d
+    //   JOIN stock_model AS m ON d.Symbol = m.ticker
+    // ''';
+
+    final queries =
+        await db.query('stock_detail', where: whereStmnt, whereArgs: ids);
+
+    if (queries.isNotEmpty) {
+      return queries;
+    } else {
+      return [];
+    }
+  }
+
   Future<List<StockDetail>> fetchStockDetailDB(String symbol) async {
-    final tables = await db.query('sqlite_master', where: 'name = ?', whereArgs: ['stock_detail']);
+    final tables = await db
+        .query('sqlite_master', where: 'name = ?', whereArgs: ['stock_detail']);
     if (tables.isEmpty) {
       await db.execute('''
           CREATE TABLE stock_detail (Symbol TEXT PRIMARY KEY, AssetType TEXT, Name TEXT, Description TEXT, Country TEXT, Sector TEXT, Industry TEXT, Address TEXT, Exchange TEXT, Currency TEXT);
-          ''' );
+          ''');
     }
-    final response = await db.query('stock_detail', where: 'Symbol = ?', whereArgs: [symbol]);
+    final response = await db
+        .query('stock_detail', where: 'Symbol = ?', whereArgs: [symbol]);
     return response.map((e) => StockDetail.fromJson(e)).toList();
   }
 }

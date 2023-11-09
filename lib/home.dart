@@ -2,13 +2,13 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:stock/api_json.dart';
-import 'package:stock/detail.dart';
+import 'package:stock/stock_detail.dart';
 import 'package:stock/profile.dart';
 import 'package:stock/stock_database.dart';
 import 'package:stock/stocks.dart';
 import 'package:waiting_animation/triangle.dart';
 
-import 'coinsView.dart';
+import 'coins_view.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -56,7 +56,7 @@ class _HomeViewState extends State<HomeView> {
                     Expanded(child: listOfStocks())
                   ])),
               const Center(child: CoinsView()),
-              Center(child: Profile()),
+              const Center(child: ProfileView()),
             ],
           ),
           bottomNavigationBar: TabBar(
@@ -138,7 +138,7 @@ class _HomeViewState extends State<HomeView> {
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return const Text('No data in the database');
         } else {
-          print(snapshot.data!.length);
+          // print(snapshot.data!.length);
           snapshot.data!.sort((a, b) => b.o.compareTo(a.o));
           return ListView.builder(
             itemCount: snapshot.data!.length,
@@ -147,7 +147,7 @@ class _HomeViewState extends State<HomeView> {
               return GestureDetector(
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => DetailedView(item: item)));
+                      builder: (context) => DetailedView(ticker: item.ticker)));
                 },
                 child: ListTile(
                     title: Text(item.ticker),
