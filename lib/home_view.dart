@@ -605,17 +605,17 @@ class _PortfolioCalculateState extends State<PortfolioCalculate> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: ThreeDotWaiting());
         } else if (snapshot.hasError || !snapshot.hasData) {
-          return Center(child: Text('Database '));
+          return const Center(child: Text('Database '));
         } else {
           final datas = snapshot.data!;
           final allCoins = allData.allCoins;
           final allStocks = allData.allStocks;
 
           if (allCoins.isEmpty || allStocks['actives']!.isEmpty) {
-            return Center(
+            return const Center(
                 child: Column(
               children: [
-                const Text('Portfolio Balance'),
+                Text('Portfolio Balance'),
                 Calculating(),
               ],
             ));
@@ -935,7 +935,7 @@ class _FavoriteStacksState extends State<FavoriteStacks> {
       alignment: Alignment.center,
       padding: const EdgeInsets.all(10),
       width: widget.size.width,
-      height: 80,
+      height: 100,
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(12)),
       child: FutureBuilder(
@@ -951,43 +951,64 @@ class _FavoriteStacksState extends State<FavoriteStacks> {
               return Text('Error: ${snapshot.error}');
             } else {
               List<Map<String, dynamic>> groupedDaily2 = snapshot.data!;
-              return ListView.builder(
-                  itemCount: groupedDaily2.length,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    return Row(
-                      children: [
-                        buildItemWithGesture(groupedDaily2[index]),
-                        const SizedBox(width: 10)
-                      ],
-                    );
-                  });
+              if (allData.allStocks['actives']!.isEmpty) {
+                return const Center(child: ThreeDotWaiting());
+              } else {
+                final groupedDaily2 = allData.allStocks['actives']!.values;
+                return ListView.builder(
+                    itemCount: groupedDaily2.length,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      return Row(
+                        children: [
+                          buildItemWithGesture(groupedDaily2.elementAt(index)),
+                          const SizedBox(width: 10)
+                        ],
+                      );
+                    });
+              }
             }
           }),
     );
   }
 
-  Widget buildItemWithGesture(Map<String, dynamic> stock) {
+  Widget buildItemWithGesture(StockData stock) {
+    bool decreasing = stock.changePercentage[0] == '-';
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => DetailedView(ticker: stock['Symbol'])));
+            builder: (context) => DetailedView(ticker: stock.ticker)));
       },
       child: Container(
-          width: 150,
+          width: 250,
           height: 80,
           alignment: Alignment.center,
           decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.grey.shade200, width: 1)),
+              border: Border.all(color: Colors.grey.shade400, width: 1)),
           child: ListTile(
-            subtitle: Text('${stock['Name']}',
-                style: const TextStyle(color: Colors.black)),
-            title: Text('${stock['Symbol']}',
-                style: const TextStyle(color: Colors.black)),
-            // trailing: Text('${stock['Country']}'),
-          )),
+              title: Text(stock.ticker,
+                  style: const TextStyle(color: Colors.black)),
+              subtitle: Text('\$${stock.price}',
+                  style: const TextStyle(color: Colors.black)),
+              trailing: Container(
+                  width: 100,
+                  child: Row(
+                    children: [
+                      Icon(
+                          decreasing
+                              ? Icons.arrow_downward
+                              : Icons.arrow_upward,
+                          size: 15,
+                          color: decreasing
+                              ? Colors.redAccent
+                              : Colors.greenAccent),
+                      Text(decreasing
+                          ? stock.changePercentage.substring(1)
+                          : stock.changePercentage),
+                    ],
+                  )))),
     );
   }
 

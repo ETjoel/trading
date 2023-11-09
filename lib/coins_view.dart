@@ -27,7 +27,7 @@ class _CoinsViewState extends State<CoinsView> {
     // final Size size = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
-          title: const Text(''),
+          title: const Text('coins', style: TextStyle(color: Colors.black)),
           backgroundColor: Colors.white,
           elevation: 0,
           iconTheme: IconThemeData(color: Colors.grey.shade700, size: 20),

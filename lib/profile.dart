@@ -23,7 +23,11 @@ class _ProfileViewState extends State<ProfileView> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Profile'),
+          title:
+              const Text('investment', style: TextStyle(color: Colors.black)),
+          backgroundColor: Colors.white,
+          elevation: 0,
+          iconTheme: IconThemeData(color: Colors.grey.shade700, size: 20),
         ),
         body: Center(child: futureBuilder()));
   }
@@ -54,75 +58,84 @@ class _ProfileViewState extends State<ProfileView> {
               stocks.add(coin);
             }
           }
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Text('Coins'),
-              Expanded(child: coinFutureBuilder(coins)),
-              Text(stocks.isNotEmpty ? 'Stocks' : ''),
-              Expanded(child: stockFutureBuilder(stocks))
-            ],
-          );
+          return listViewBuilder(result);
         }
       },
     );
   }
 
-  Widget coinFutureBuilder(List<UserData> coins) {
+  Widget listViewBuilder(List<UserData> userData) {
     return ListView.builder(
-      itemCount: coins.length,
-      itemBuilder: (builder, index) {
-        return Dismissible(
-          key: UniqueKey(),
-          direction: DismissDirection.endToStart,
-          background: Container(
-            color: Colors.red,
-            alignment: Alignment.centerRight,
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: const Icon(Icons.delete, color: Colors.white),
-          ),
-          onDismissed: (direction) {
-            setState(() {
-              coins.removeAt(index);
-            });
-          },
-          child: ListTile(
-            title: Text(coins[index].id),
-            subtitle: Text(coins[index].isCoin == 1 ? 'coin' : 'stock'),
-            trailing: Text(coins[index].investment.toStringAsFixed(9)),
-          ),
-        );
-      },
-    );
+        itemCount: userData.length,
+        itemBuilder: (context, index) {
+          return Column(
+            children: [
+              ListTile(
+                title: Text(userData[index].id),
+                subtitle: Text(userData[index].isCoin == 1 ? 'Coin' : 'Stock'),
+                trailing: Text(userData[index].investment.toStringAsFixed(5)),
+              ),
+              const Divider()
+            ],
+          );
+        });
   }
 
-  Widget stockFutureBuilder(List<UserData> stocks) {
-    return ListView.builder(
-      itemCount: stocks.length,
-      itemBuilder: (builder, index) {
-        return Dismissible(
-          key: UniqueKey(),
-          direction: DismissDirection.endToStart,
-          background: Container(
-            color: Colors.red,
-            alignment: Alignment.centerRight,
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: const Icon(Icons.delete, color: Colors.white),
-          ),
-          onDismissed: (direction) {
-            setState(() {
-              stocks.removeAt(index);
-            });
-          },
-          child: ListTile(
-            title: Text(stocks[index].id),
-            subtitle: Text(stocks[index].isCoin == 1 ? 'coin' : 'stock'),
-            trailing: Text(stocks[index].investment.toStringAsFixed(9)),
-          ),
-        );
-      },
-    );
-  }
+  // Widget coinFutureBuilder(List<UserData> coins) {
+  //   return ListView.builder(
+  //     itemCount: coins.length,
+  //     itemBuilder: (builder, index) {
+  //       return Dismissible(
+  //         key: UniqueKey(),
+  //         direction: DismissDirection.endToStart,
+  //         background: Container(
+  //           color: Colors.red,
+  //           alignment: Alignment.centerRight,
+  //           padding: const EdgeInsets.symmetric(horizontal: 20.0),
+  //           child: const Icon(Icons.delete, color: Colors.white),
+  //         ),
+  //         onDismissed: (direction) {
+  //           setState(() {
+  //             coins.removeAt(index);
+  //           });
+  //         },
+  //         child: ListTile(
+  //           title: Text(coins[index].id),
+  //           subtitle: Text(coins[index].isCoin == 1 ? 'coin' : 'stock'),
+  //           trailing: Text(coins[index].investment.toStringAsFixed(9)),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
+
+  // Widget stockFutureBuilder(List<UserData> stocks) {
+  //   return ListView.builder(
+  //     itemCount: stocks.length,
+  //     itemBuilder: (builder, index) {
+  //       return Dismissible(
+  //         key: UniqueKey(),
+  //         direction: DismissDirection.endToStart,
+  //         background: Container(
+  //           color: Colors.red,
+  //           alignment: Alignment.centerRight,
+  //           padding: const EdgeInsets.symmetric(horizontal: 20.0),
+  //           child: const Icon(Icons.delete, color: Colors.white),
+  //         ),
+  //         onDismissed: (direction) {
+  //           setState(() {
+  //             stocks.removeAt(index);
+  //           });
+  //         },
+  //         child: ListTile(
+  //           title: Text(stocks[index].id),
+  //           subtitle: Text(stocks[index].isCoin == 1 ? 'coin' : 'stock'),
+  //           trailing: Text(stocks[index].investment.toStringAsFixed(9)),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   Future<List<UserData>> fetchUserDataDB() async {
     return await userDataDB.fetchUserData();

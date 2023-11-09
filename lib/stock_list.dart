@@ -29,7 +29,7 @@ class _StockListState extends State<StockList> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text(''),
+          title: const Text('stocks', style: TextStyle(color: Colors.black)),
           iconTheme: IconThemeData(color: Colors.grey.shade700, size: 20),
           backgroundColor: Colors.white,
           elevation: 0,
