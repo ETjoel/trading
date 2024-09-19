@@ -7,7 +7,7 @@ This Flutter application is designed to provide users with comprehensive and up-
  - Custom Loading Animations: Enjoy a smooth and visually appealing experience, with custom-made waiting animations while data is being loaded from the database or fetched from external APIs.
 
 
-## Technologies and Tools Used
-- State Management with Provider: Efficient and seamless state management throughout the app, utilizing the Provider package to maintain and manage app-wide states.
-- Charting with fl_chart: Data visualization is powered by the fl_chart package, providing clear, customizable charts for stock and crypto performance trends.
-- Local Storage with SQFlite: Cached data is stored locally using the SQFlite package, allowing users to access information even without an active internet connection.
+## Packages used
+- Provider: Efficient and seamless state management throughout the app.
+- fl_chart: To providing clear, customizable charts for stock and crypto performance trends.
+- SQFlite: Cached data locally using the SQFlite package.
